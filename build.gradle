@@ -17,7 +17,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.eclipse.jgit:org.eclipse.jgit:5.0.2.201807311906-r'
-        classpath 'com.github.cs125-illinois:gradlegrader:0.12.3'
+        classpath 'com.github.cs125-illinois:gradlegrader:0.12.4'
     }
 }
 
