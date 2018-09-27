@@ -126,7 +126,7 @@ public class Player {
      * <p>
      * This method should only use the id field of the instance. This implements what is known as
      * <i>entity</i> semantics. Two players with the same name and same score may not be equal if
-     * they were created at different times. Note that Eclipse can auto-generate this and
+     * they were created at different times. Note that IntelliJ can auto-generate this and
      * {@link #equals(Object) equals}.
      *
      * @see java.lang.Object#hashCode()
@@ -144,7 +144,7 @@ public class Player {
      * <p>
      * This method should only use the id field of the instance. This implements what is known as
      * <i>entity</i> semantics. Two players with the same name and same score may not be equal if
-     * they were created at different times. Note that Eclipse can auto-generate this and
+     * they were created at different times. Note that IntelliJ can auto-generate this and
      * {@link #hashCode() hashCode()}.
      *
      * @see java.lang.Object#equals(java.lang.Object)
