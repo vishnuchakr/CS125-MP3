@@ -129,5 +129,9 @@ test:
       score: 10
       message: "testGameCount succeeded"
       name: "testGameCount"
+    - selector: "count(//testcase[@name='testGetAndSetWidth']) = 0"
+      score: 0
+      message: "ConnectN didn't compile"
+      name: "ConnectN"
 
 # vim: ts=2:sw=2:et
