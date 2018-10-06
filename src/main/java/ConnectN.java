@@ -32,7 +32,7 @@ public class ConnectN {
     private static int gameCount = 0;
 
     /** ID of the current game. */
-    private int id = gameCount - 1;
+    private int id;
 
     /** Determines whether there is an existing game. */
     private static boolean ongoingGame = false;
@@ -46,6 +46,7 @@ public class ConnectN {
         this.width = 0;
         this.n = 0;
         gameCount++;
+        this.id = gameCount - 1;
     }
 
     /**
@@ -66,6 +67,7 @@ public class ConnectN {
         }
         this.n = 0;
         gameCount++;
+        this.id = gameCount - 1;
     }
 
     /**
@@ -75,7 +77,24 @@ public class ConnectN {
      * @param setN Set the N value.
      */
     public ConnectN(final int setWidth, final int setHeight, final int setN) {
+        if (setWidth >= MIN_WIDTH && setWidth <= MAX_WIDTH) {
+            this.width = setWidth;
+        } else {
+            this.width = 0;
+        }
+        if (setHeight >= MIN_HEIGHT && setHeight <= MAX_HEIGHT) {
+            this.height = setHeight;
+        } else {
+            this.height = 0;
+        }
+        if (setN >= MIN_N && (setN <= this.height - 1 && setN <= this.width - 1)) {
+            n = setN;
+        } else {
+            n = 0;
+        }
+
         gameCount++;
+        this.id = gameCount - 1;
     }
 
     /**
@@ -83,9 +102,10 @@ public class ConnectN {
      * @param otherBoard Board to be read by the constructor.
      */
     public ConnectN(final ConnectN otherBoard) {
-        width = otherBoard.getWidth();
-        height = otherBoard.getHeight();
-        n = otherBoard.getN();
+        this.width = otherBoard.getWidth();
+        this.height = otherBoard.getHeight();
+        this.n = otherBoard.getN();
+        this.id = otherBoard.getID();
         gameCount++;
     }
 
@@ -103,9 +123,11 @@ public class ConnectN {
 
     /**
      * Get the player at a specific board position.
+     * @param getX Get X.
+     * @param getY Get Y.
      * @return The player at specified position.
      */
-    public Player getBoardAt() {
+    public Player getBoardAt(final int getX, final int getY) {
         return new Player("bob");
     }
 
@@ -122,7 +144,7 @@ public class ConnectN {
      * @return id.
      */
     public int getID() {
-        return id;
+        return this.id;
     }
 
     /**
@@ -173,7 +195,7 @@ public class ConnectN {
      * @param setX sets the X position of the board.
      * @param setY sets the Y position of the board.
      * @return True if the move succeeds, false if not.
-     * */
+     */
     public boolean setBoardAt(final Player player, final int setX, final int setY) {
         return true;
     }
@@ -238,10 +260,11 @@ public class ConnectN {
      * @param width Width of the boards.
      * @param height Height of the boards.
      * @param n N value for the boards in question.
+     * @return The created ConnectN boards.
      */
-//    public static ConnectN[] createMany(final int number, final int width, final int height, final int n) {
-//
-//    }
+    public static ConnectN[] createMany(final int number, final int width, final int height, final int n) {
+        return new ConnectN[0];
+    }
 
     /** Define equality for the ConnectN class.
      * @param obj Determining equality of Object obj.
@@ -258,13 +281,14 @@ public class ConnectN {
             return false;
         }
         ConnectN other = (ConnectN) obj;
-        return id == other.getId();
+        //return id == other.getId();
+        return true;
     }
 
     /**
      * Return the total number of games that have been created.
      * @return gameCount.
-     * */
+     */
     public static int getTotalGames() {
         return gameCount;
     }
