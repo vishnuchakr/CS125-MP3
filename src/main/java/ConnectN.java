@@ -281,8 +281,7 @@ public class ConnectN {
             return false;
         }
         ConnectN other = (ConnectN) obj;
-        //return id == other.getId();
-        return true;
+        return id == other.id;
     }
 
     /**
