@@ -176,7 +176,10 @@ public class ConnectN {
      * @return Hashcode.
      */
     public int hashCode() {
-        return 0;
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        return result;
     }
 
     /** Drop a tile in a particular column.
@@ -206,7 +209,17 @@ public class ConnectN {
      * @return true if method succesful, false if not.
      */
     public boolean setHeight(final int setHeight) {
-        return true;
+        if (ongoingGame) {
+            return false;
+        }
+        if (setHeight >= MIN_WIDTH && setHeight <= MAX_WIDTH) {
+            this.width = setHeight;
+            if (this.n > this.height - 1) {
+                this.n = 0;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -224,7 +237,17 @@ public class ConnectN {
      * @return true if setWidth is succesful, false if not.
      */
     public boolean setWidth(final int setWidth) {
-        return true;
+        if (ongoingGame) {
+            return false;
+        }
+        if (setWidth >= MIN_WIDTH && setWidth <= MAX_WIDTH) {
+            this.width = setWidth;
+            if (this.n > this.width - 1) {
+                this.n = 0;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
