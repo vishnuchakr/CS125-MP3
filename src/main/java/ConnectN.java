@@ -213,7 +213,7 @@ public class ConnectN {
             return false;
         }
         if (setHeight >= MIN_WIDTH && setHeight <= MAX_WIDTH) {
-            this.width = setHeight;
+            this.height = setHeight;
             if (this.n > this.height - 1) {
                 this.n = 0;
             }
