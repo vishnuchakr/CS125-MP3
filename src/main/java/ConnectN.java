@@ -37,6 +37,12 @@ public class ConnectN {
     /** Determines whether there is an existing game. */
     private static boolean ongoingGame = false;
 
+    /** Determines if setWidth ran. */
+    private boolean setWidthRan = false;
+
+    /** Determines if setHeight ran. */
+    private boolean setHeightRan = false;
+
     //Write Constructors
     /**
      * Create a new ConnectN board with uninitialized width, height, and N value.
@@ -88,9 +94,9 @@ public class ConnectN {
             this.height = 0;
         }
         if (setN >= MIN_N && (setN <= this.height - 1 && setN <= this.width - 1)) {
-            n = setN;
+            this.n = setN;
         } else {
-            n = 0;
+            this.n = 0;
         }
 
         gameCount++;
@@ -115,10 +121,10 @@ public class ConnectN {
      * @return board.
      */
     public Player[][] getBoard() {
-        if (width > 0 && height > 0) {
-            return new Player[0][0];
+        if (!setWidthRan || !setHeightRan) {
+            return null;
         }
-        return null;
+        return new Player[0][0];
     }
 
     /**
@@ -212,23 +218,15 @@ public class ConnectN {
         if (ongoingGame) {
             return false;
         }
-        if (setHeight >= MIN_WIDTH && setHeight <= MAX_WIDTH) {
+        if (setHeight >= MIN_HEIGHT && setHeight <= MAX_HEIGHT) {
             this.height = setHeight;
-            if (this.n > this.height - 1) {
-                this.n = 0;
-            }
+//            if (this.n > this.height - 1) {
+//                this.n = 0;
+//            }
+            setHeightRan = true;
             return true;
         }
         return false;
-    }
-
-    /**
-     * Attempt to set the current board N value.
-     * @param newN New N value for the board.
-     * @return true if setN succesful, false if not.
-     */
-    public boolean setN(final int newN) {
-        return true;
     }
 
     /**
@@ -245,6 +243,26 @@ public class ConnectN {
             if (this.n > this.width - 1) {
                 this.n = 0;
             }
+            setWidthRan = true;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Attempt to set the current board N value.
+     * @param newN New N value for the board.
+     * @return true if setN successful, false if not.
+     */
+    public boolean setN(final int newN) {
+        if (ongoingGame) {
+            return false;
+        }
+        if (!setHeightRan || !setWidthRan) {
+            return false;
+        }
+        if (newN >= MIN_N && (newN <= this.height - 1 && newN <= this.width - 1)) {
+            this.n = newN;
             return true;
         }
         return false;
