@@ -220,9 +220,9 @@ public class ConnectN {
         }
         if (setHeight >= MIN_HEIGHT && setHeight <= MAX_HEIGHT) {
             this.height = setHeight;
-//            if (this.n > this.height - 1) {
-//                this.n = 0;
-//            }
+            if (this.n > this.height - 1) {
+                this.n = 0;
+            }
             setHeightRan = true;
             return true;
         }
@@ -240,9 +240,9 @@ public class ConnectN {
         }
         if (setWidth >= MIN_WIDTH && setWidth <= MAX_WIDTH) {
             this.width = setWidth;
-            if (this.n > this.width - 1) {
-                this.n = 0;
-            }
+//            if (this.n > this.width - 1) {
+//                this.n = 0;
+//            }
             setWidthRan = true;
             return true;
         }
