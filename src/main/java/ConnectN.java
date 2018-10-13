@@ -120,6 +120,7 @@ public class ConnectN {
         gameCount++;
         id = this.getTotalGames() - 1;
     }
+    //random
 
     /**
      * Create a new ConnectN board with dimensions and N value copied from another board.
