@@ -1,3 +1,4 @@
+
 /**
  * A class that implements a Connect4-like game.
  * @see <a href="https://cs125.cs.illinois.edu/MP/3/">MP3 Documentation</a>
@@ -28,6 +29,9 @@ public class ConnectN {
     /** N-value for the board. */
     private int n;
 
+    /** Determines whether the score should be incremented. */
+    private boolean shouldAdd = true;
+
     /** Counts how many times a constructor has been called. */
     private static int gameCount = 0;
 
@@ -35,13 +39,19 @@ public class ConnectN {
     private int id;
 
     /** Determines whether there is an existing game. */
-    private static boolean ongoingGame = false;
+    private boolean hasStarted = false;
 
     /** Determines if setWidth ran. */
-    private boolean setWidthRan = false;
+    private boolean widthSet;
 
     /** Determines if setHeight ran. */
-    private boolean setHeightRan = false;
+    private boolean heightSet;
+
+    /** Instantiates the board. */
+    private Player[][] board;
+
+    /** Winning player. */
+    private Player winningPlayer;
 
     //Write Constructors
     /**
@@ -51,8 +61,9 @@ public class ConnectN {
         this.height = 0;
         this.width = 0;
         this.n = 0;
+        this.board = null;
         gameCount++;
-        this.id = gameCount - 1;
+        this.id = this.getTotalGames() - 1; //maybe dont need this
     }
 
     /**
@@ -61,19 +72,22 @@ public class ConnectN {
      * @param setHeight Set the height.
      */
     public ConnectN(final int setWidth, final int setHeight) {
-        if (setWidth >= MIN_WIDTH && setWidth <= MAX_WIDTH) {
-            this.width = setWidth;
-        } else {
+        if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             this.width = 0;
-        }
-        if (setHeight >= MIN_HEIGHT && setHeight <= MAX_HEIGHT) {
-            this.height = setHeight;
         } else {
+            this.width = setWidth;
+        }
+        if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             this.height = 0;
+        } else {
+            this.height = setHeight;
         }
         this.n = 0;
+        widthSet = true;
+        heightSet = true;
+        board = new Player[this.width][this.height];
         gameCount++;
-        this.id = gameCount - 1;
+        id = this.getTotalGames() - 1;
     }
 
     /**
@@ -83,24 +97,28 @@ public class ConnectN {
      * @param setN Set the N value.
      */
     public ConnectN(final int setWidth, final int setHeight, final int setN) {
-        if (setWidth >= MIN_WIDTH && setWidth <= MAX_WIDTH) {
-            this.width = setWidth;
-        } else {
+        if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             this.width = 0;
-        }
-        if (setHeight >= MIN_HEIGHT && setHeight <= MAX_HEIGHT) {
-            this.height = setHeight;
         } else {
+            this.width = setWidth;
+        }
+        if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             this.height = 0;
-        }
-        if (setN >= MIN_N && (setN <= this.height - 1 && setN <= this.width - 1)) {
-            this.n = setN;
         } else {
-            this.n = 0;
+            this.height = setHeight;
         }
-
+        if (this.width != 0 && this.height != 0) {
+            if (setN < MIN_N || (setN > Math.max(setWidth, setHeight) - 1)) {
+                this.n = 0;
+            } else {
+                this.n = setN;
+            }
+        }
+        widthSet = true;
+        heightSet = true;
+        board = new Player[this.width][this.height];
         gameCount++;
-        this.id = gameCount - 1;
+        id = this.getTotalGames() - 1;
     }
 
     /**
@@ -108,11 +126,10 @@ public class ConnectN {
      * @param otherBoard Board to be read by the constructor.
      */
     public ConnectN(final ConnectN otherBoard) {
-        this.width = otherBoard.getWidth();
-        this.height = otherBoard.getHeight();
-        this.n = otherBoard.getN();
-        this.id = otherBoard.getID();
+        this(otherBoard.width, otherBoard.height, otherBoard.n);
+        this.board = new Player[this.width][this.height];
         gameCount++;
+        id = this.getTotalGames() - 1;
     }
 
     //Write methods
@@ -121,20 +138,22 @@ public class ConnectN {
      * @return board.
      */
     public Player[][] getBoard() {
-        if (!setWidthRan || !setHeightRan) {
+        if (width <= 0 || height <= 0) {
             return null;
         }
-        return new Player[0][0];
-    }
+        if (board == null) {
+            return null;
+        }
+        Player[][] copy = new Player[width][height];
 
-    /**
-     * Get the player at a specific board position.
-     * @param getX Get X.
-     * @param getY Get Y.
-     * @return The player at specified position.
-     */
-    public Player getBoardAt(final int getX, final int getY) {
-        return new Player("bob");
+        for (int i = 0; i < width - 1; i++) {
+            for (int j = 0; j < height - 1; j++) {
+                if (board[i][j] != null) {
+                    copy[i][i] = new Player(board[i][j]);
+                }
+            }
+        }
+        return copy;
     }
 
     /**
@@ -142,7 +161,7 @@ public class ConnectN {
      * @return height.
      */
     public int getHeight() {
-        return height;
+        return this.height;
     }
 
     /**
@@ -158,7 +177,7 @@ public class ConnectN {
      * @return n.
      */
     public int getN() {
-        return n;
+        return this.n;
     }
 
     /**
@@ -166,7 +185,7 @@ public class ConnectN {
      * @return width.
      */
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
     /**
@@ -174,7 +193,57 @@ public class ConnectN {
      * @return winner.
      */
     public Player getWinner() {
-        return new Player("Bob");
+//        if (board == null) {
+//            return null;
+//        }
+//        if (width == 0 || height == 0) {
+//            return null;
+//        }
+//
+//        int count = 1;
+//        for (int i = 0; i < board.length; i++) {
+//            for (int j = 0; j < board[i].length; j++) {
+//                Player player = board[i][j];
+//                if (player != null) {
+//                    if (board[i][j + 1] == player) {
+//                        count++;
+//                    } else {
+//                        count = 0;
+//                        continue;
+//                    }
+//                    if (count == (n - 1)) {
+//                        if (shouldAdd) {
+//                            player.addScore();
+//                        }
+//                        shouldAdd = false;
+//                        return player;
+//                    }
+//                }
+//            }
+//        }
+//
+//        int horizCount = 1;
+//        for (int i = 0; i < board[0].length; i++) {
+//            for (int j = 0; j < board.length - 1; j++) {
+//                Player horizPlayer = board[j][i];
+//                if (horizPlayer != null) {
+//                    if (board[j + 1][i] == horizPlayer) {
+//                        horizCount++;
+//                    } else {
+//                        horizCount = 0;
+//                        continue;
+//                    }
+//                    if (horizCount == n - 1) {
+//                        if (shouldAdd) {
+//                            horizPlayer.addScore();
+//                        }
+//                        shouldAdd = false;
+//                        return horizPlayer;
+//                    }
+//                }
+//            }
+//        }
+        return null;
     }
 
     /**
@@ -190,13 +259,27 @@ public class ConnectN {
 
     /** Drop a tile in a particular column.
      * @param player Player that dropped the tile.
-     * @param x Column where the tile is dropped.
+     * @param setX Column where the tile is dropped.
      * @return true if call is succesful, false if not.
      */
-    public boolean setBoardAt(final Player player, final int x) {
-
-        ongoingGame = true;
-        return true;
+    public boolean setBoardAt(final Player player, final int setX) {
+//        if (!shouldAdd) {
+//            return false;
+//        }
+        if (width == 0 || height == 0 || n == 0 || player == null) {
+            return false;
+        }
+        if (setX < 0 || setX > this.board.length - 1) {
+            return false;
+        }
+        for (int i = 0; i < board[0].length; i++) {
+            if (this.board[setX][i] == null) {
+                this.board[setX][i] = player;
+                hasStarted = true;
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Set the board at a specific position.
@@ -206,47 +289,88 @@ public class ConnectN {
      * @return True if the move succeeds, false if not.
      */
     public boolean setBoardAt(final Player player, final int setX, final int setY) {
+//        if (getWinner() != null) {
+//            return false;
+//        }
+        if (width == 0 || height == 0 || n == 0 || player == null) {
+            return false;
+        }
+        if (setX < 0 || setX > this.width - 1 || setY < 0 || setY > this.height - 1) {
+            return false;
+        }
+        if (board[setX][setY] != null) {
+            return false;
+        }
+
+        if (setY == 0) {
+            board[setX][setY] = player;
+            hasStarted = true;
+            return true;
+        } else if (board[setX][setY - 1] == null) {
+            return false;
+        }
+        board[setX][setY] = player;
+        hasStarted = true;
         return true;
     }
 
     /**
+     * Get the player at a specific board position.
+     * @param getX Get X.
+     * @param getY Get Y.
+     * @return The player at specified position.
+     */
+    public Player getBoardAt(final int getX, final int getY) {
+        if (getX > this.width - 1 || getX < 0 || getY > this.height - 1 || getY < 0) {
+            return null;
+        }
+        if (board[getX][getY] == null) {
+            return null;
+        }
+        return board[getX][getY];
+    }
+
+
+    /**
      * Attempt to set the board height.
      * @param setHeight Sets the height of the board.
-     * @return true if method succesful, false if not.
+     * @return true if method successful, false if not.
      */
     public boolean setHeight(final int setHeight) {
-        if (ongoingGame) {
+        if (hasStarted) {
             return false;
         }
-        if (setHeight >= MIN_HEIGHT && setHeight <= MAX_HEIGHT) {
-            this.height = setHeight;
-            if (this.n > this.height - 1) {
-                this.n = 0;
-            }
-            setHeightRan = true;
-            return true;
+        if (setHeight > MAX_HEIGHT || setHeight < MIN_HEIGHT) {
+            return false;
         }
-        return false;
+        this.height = setHeight;
+        heightSet = true;
+        if (n > Math.max(width, height) - 1) {
+            this.n = 0;
+        }
+        this.board = new Player[width][height];
+        return true;
     }
 
     /**
      * Attempt to set the board width.
      * @param setWidth New width for the board.
-     * @return true if setWidth is succesful, false if not.
+     * @return true if setWidth is successful, false if not.
      */
     public boolean setWidth(final int setWidth) {
-        if (ongoingGame) {
+        if (hasStarted) {
             return false;
         }
-        if (setWidth >= MIN_WIDTH && setWidth <= MAX_WIDTH) {
-            this.width = setWidth;
-//            if (this.n > this.width - 1) {
-//                this.n = 0;
-//            }
-            setWidthRan = true;
-            return true;
+        if (setWidth > MAX_WIDTH || setWidth < MIN_WIDTH) {
+            return false;
         }
-        return false;
+        this.board = new Player[width][height];
+        this.width = setWidth;
+        if (n > Math.max(width, height) - 1) {
+            this.n = 0;
+        }
+        widthSet = true;
+        return true;
     }
 
     /**
@@ -255,15 +379,17 @@ public class ConnectN {
      * @return true if setN successful, false if not.
      */
     public boolean setN(final int newN) {
-        if (ongoingGame) {
+        if (hasStarted) {
             return false;
         }
-        if (!setHeightRan || !setWidthRan) {
+        if (!widthSet || !heightSet) {
             return false;
         }
-        if (newN >= MIN_N && (newN <= this.height - 1 && newN <= this.width - 1)) {
-            this.n = newN;
-            return true;
+        if (newN >= MIN_N) {
+            if (newN <= (Math.max(width, height)) - 1) {
+                this.n = newN;
+                return true;
+            }
         }
         return false;
     }
@@ -274,6 +400,14 @@ public class ConnectN {
      * @return Determines if the boards are the same or not.
      */
     public static boolean compareBoards(final ConnectN... boards) {
+        if (boards == null || boards.length == 0) {
+            return false;
+        }
+        for (int i = 0; i < boards.length - 1; i++) {
+            if (!(compareBoards(boards[i], boards[i + 1]))) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -283,6 +417,31 @@ public class ConnectN {
      * @return Determines if the boards are the same or not.
      */
     public static boolean compareBoards(final ConnectN firstBoard, final ConnectN secondBoard) {
+        if (firstBoard == null || secondBoard == null) {
+            return false;
+        }
+        if (firstBoard.getWidth() != secondBoard.getWidth()) {
+            return false;
+        }
+        if (firstBoard.getHeight() != secondBoard.getHeight()) {
+            return false;
+        }
+        if (firstBoard.getN() != secondBoard.getN()) {
+            return false;
+        }
+        for (int i = 0; i < firstBoard.getHeight(); i++) {
+            for (int j = 0; i < firstBoard.getWidth(); j++) {
+                if (firstBoard.getBoardAt(i, j) == null && secondBoard.getBoardAt(i, j) == null) {
+                    continue;
+                }
+                if (firstBoard.getBoardAt(i, j) == null || secondBoard.getBoardAt(i, j) == null) {
+                    return false;
+                }
+                if (!(firstBoard.getBoardAt(i, j).equals(secondBoard.getBoardAt(i, j)))) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -293,7 +452,11 @@ public class ConnectN {
      * @return A new ConnectN board.
      */
     public static ConnectN create(final int width, final int height, final int n) {
-        return new ConnectN();
+        if (width < MIN_WIDTH || width > MIN_WIDTH || height < MIN_HEIGHT || height > MAX_HEIGHT
+            || n < MIN_N || n > width - 1 || n > height - 1) {
+            return null;
+        }
+        return new ConnectN(width, height, n);
     }
 
     /**Creates multiple new ConnectN instances.
@@ -304,7 +467,18 @@ public class ConnectN {
      * @return The created ConnectN boards.
      */
     public static ConnectN[] createMany(final int number, final int width, final int height, final int n) {
-        return new ConnectN[0];
+        if (number == 0) {
+            return null;
+        }
+        if (width >= MIN_WIDTH && width <= MIN_WIDTH && height >= MIN_HEIGHT && height <= MAX_HEIGHT
+                && n >= MIN_N && n <= width - 1 && n <= height - 1) {
+            ConnectN[] list = new ConnectN[number];
+            for (int i = 0; i < list.length; i++) {
+                list[i] = new ConnectN(width, height, n);
+            }
+            return list;
+        }
+        return null;
     }
 
     /** Define equality for the ConnectN class.
