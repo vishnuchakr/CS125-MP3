@@ -199,7 +199,7 @@ public class ConnectN {
         }
         Player winningPlayer = null;
 
-        //check vertically
+        //check vertically for winners
         for (int i = 0; i < board.length; i++) {
             int count = 0;
             for (int j = 0; j < board[i].length - 1; j++) {
@@ -219,7 +219,7 @@ public class ConnectN {
             }
         }
 
-        //check horizontally
+        //check horizontally for winners
         for (int i = 0; i < board[0].length; i++) {
             int counter = 0;
             for (int j = 0; j < board.length - 1; j++) {
