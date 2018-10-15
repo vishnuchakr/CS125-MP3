@@ -50,9 +50,6 @@ public class ConnectN {
     /** Instantiates the board. */
     private Player[][] board;
 
-    /** Winning player. */
-    private Player winningPlayer;
-
     //Write Constructors
     /**
      * Create a new ConnectN board with uninitialized width, height, and N value.
@@ -200,7 +197,48 @@ public class ConnectN {
         if (width == 0 || height == 0) {
             return null;
         }
-        return null;
+        Player winningPlayer = null;
+
+        //check vertically
+        for (int i = 0; i < board.length; i++) {
+            int count = 0;
+            for (int j = 0; j < board[i].length - 1; j++) {
+                Player player = board[i][j];
+                if (player != null) {
+                    if (player.equals(board[i][j + 1])) {
+                        count++;
+                    }
+                    if (count == n - 1) {
+                        if (shouldAdd) {
+                            player.addScore();
+                        }
+                        shouldAdd = false;
+                        winningPlayer = player;
+                    }
+                }
+            }
+        }
+
+        //check horizontally
+        for (int i = 0; i < board[0].length; i++) {
+            int counter = 0;
+            for (int j = 0; j < board.length - 1; j++) {
+                Player horizontal = board[j][i];
+                if (horizontal != null) {
+                    if (horizontal.equals(board[j + 1][i])) {
+                        counter++;
+                    }
+                    if (counter == n - 1) {
+                        if (shouldAdd) {
+                            horizontal.addScore();
+                        }
+                        shouldAdd = false;
+                        winningPlayer = horizontal;
+                    }
+                }
+            }
+        }
+        return winningPlayer;
     }
 
     /**
@@ -220,9 +258,9 @@ public class ConnectN {
      * @return true if call is succesful, false if not.
      */
     public boolean setBoardAt(final Player player, final int setX) {
-//        if (!shouldAdd) {
-//            return false;
-//        }
+        if (!shouldAdd) {
+            return false;
+        }
         if (width == 0 || height == 0 || n == 0 || player == null) {
             return false;
         }
