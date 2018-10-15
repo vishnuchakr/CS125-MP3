@@ -63,7 +63,7 @@ public class ConnectN {
         this.n = 0;
         this.board = null;
         gameCount++;
-        this.id = this.getTotalGames() - 1; //maybe dont need this
+        //this.id = this.getTotalGames() - 1;
     }
 
     /**
@@ -194,56 +194,12 @@ public class ConnectN {
      * @return winner.
      */
     public Player getWinner() {
-//        if (board == null) {
-//            return null;
-//        }
-//        if (width == 0 || height == 0) {
-//            return null;
-//        }
-//
-//        int count = 1;
-//        for (int i = 0; i < board.length; i++) {
-//            for (int j = 0; j < board[i].length; j++) {
-//                Player player = board[i][j];
-//                if (player != null) {
-//                    if (board[i][j + 1] == player) {
-//                        count++;
-//                    } else {
-//                        count = 0;
-//                        continue;
-//                    }
-//                    if (count == (n - 1)) {
-//                        if (shouldAdd) {
-//                            player.addScore();
-//                        }
-//                        shouldAdd = false;
-//                        return player;
-//                    }
-//                }
-//            }
-//        }
-//
-//        int horizCount = 1;
-//        for (int i = 0; i < board[0].length; i++) {
-//            for (int j = 0; j < board.length - 1; j++) {
-//                Player horizPlayer = board[j][i];
-//                if (horizPlayer != null) {
-//                    if (board[j + 1][i] == horizPlayer) {
-//                        horizCount++;
-//                    } else {
-//                        horizCount = 0;
-//                        continue;
-//                    }
-//                    if (horizCount == n - 1) {
-//                        if (shouldAdd) {
-//                            horizPlayer.addScore();
-//                        }
-//                        shouldAdd = false;
-//                        return horizPlayer;
-//                    }
-//                }
-//            }
-//        }
+        if (board == null) {
+            return null;
+        }
+        if (width == 0 || height == 0) {
+            return null;
+        }
         return null;
     }
 
@@ -276,6 +232,7 @@ public class ConnectN {
         for (int i = 0; i < board[0].length; i++) {
             if (this.board[setX][i] == null) {
                 this.board[setX][i] = player;
+                //getWinner();
                 hasStarted = true;
                 return true;
             }
@@ -305,12 +262,14 @@ public class ConnectN {
 
         if (setY == 0) {
             board[setX][setY] = player;
+            //getWinner();
             hasStarted = true;
             return true;
         } else if (board[setX][setY - 1] == null) {
             return false;
         }
         board[setX][setY] = player;
+        //getWinner();
         hasStarted = true;
         return true;
     }
@@ -430,15 +389,32 @@ public class ConnectN {
         if (firstBoard.getN() != secondBoard.getN()) {
             return false;
         }
-        for (int i = 0; i < firstBoard.getHeight(); i++) {
-            for (int j = 0; i < firstBoard.getWidth(); j++) {
-                if (firstBoard.getBoardAt(i, j) == null && secondBoard.getBoardAt(i, j) == null) {
+//        if (firstBoard.getN() != secondBoard.getN()) {
+//            return false;
+//        }
+        if (firstBoard.equals(secondBoard)) {
+            return true;
+        }
+        Player[][] board1 = firstBoard.getBoard();
+        Player[][] board2 = secondBoard.getBoard();
+        if (board1 == null && board2 == null) {
+            return true;
+        }
+
+        for (int i = 0; i < board1.length; i++) {
+            for (int j = 0; j < board1[0].length; j++) {
+//                if (firstBoard.getBoardAt(i, j) == null && secondBoard.getBoardAt(i, j) == null) {
+//                    continue;
+//                }
+//                if (firstBoard.getBoardAt(i, j) == null || secondBoard.getBoardAt(i, j) == null
+//                    || !(firstBoard.getBoardAt(i, j).equals(secondBoard.getBoardAt(i, j)))) {
+//                    return false;
+//                }
+                if (board1[i][j] == board2[i][j]) {
                     continue;
                 }
-                if (firstBoard.getBoardAt(i, j) == null || secondBoard.getBoardAt(i, j) == null) {
-                    return false;
-                }
-                if (!(firstBoard.getBoardAt(i, j).equals(secondBoard.getBoardAt(i, j)))) {
+
+                if (!board1[i][j].equals(board2[i][j])) {
                     return false;
                 }
             }
@@ -453,7 +429,7 @@ public class ConnectN {
      * @return A new ConnectN board.
      */
     public static ConnectN create(final int width, final int height, final int n) {
-        if (width < MIN_WIDTH || width > MIN_WIDTH || height < MIN_HEIGHT || height > MAX_HEIGHT
+        if (width < MIN_WIDTH || width > MAX_WIDTH || height < MIN_HEIGHT || height > MAX_HEIGHT
             || n < MIN_N || n > width - 1 || n > height - 1) {
             return null;
         }
@@ -471,15 +447,15 @@ public class ConnectN {
         if (number == 0) {
             return null;
         }
-        if (width >= MIN_WIDTH && width <= MIN_WIDTH && height >= MIN_HEIGHT && height <= MAX_HEIGHT
-                && n >= MIN_N && n <= width - 1 && n <= height - 1) {
-            ConnectN[] list = new ConnectN[number];
-            for (int i = 0; i < list.length; i++) {
-                list[i] = new ConnectN(width, height, n);
-            }
-            return list;
+        if (width < MIN_WIDTH || width > MAX_WIDTH || height < MIN_HEIGHT || height > MAX_HEIGHT
+                || n < MIN_N || n > width - 1 || n > height - 1) {
+            return null;
         }
-        return null;
+        ConnectN[] list = new ConnectN[number];
+        for (int i = 0; i < list.length; i++) {
+            list[i] = new ConnectN(width, height, n);
+        }
+        return list;
     }
 
     /** Define equality for the ConnectN class.
